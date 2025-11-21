@@ -3,39 +3,25 @@ site_url: https://liaoruoxue.github.io/sciencepedia/
 repo_url: https://github.com/liaoruoxue/sciencepedia
 repo_name: SciencePedia
 
+# 不设置 docs_dir，保持默认 docs/，避免循环构建问题
 theme:
   name: material
   language: zh
   features:
-    - navigation.instant # 页面无刷新跳转
-    - navigation.tabs    # 顶部导航栏模式（适合分类多的情况）
-    - navigation.top     # 返回顶部按钮
-    - search.suggest
-    - search.highlight
-  palette: 
+    - navigation.instant
+    - navigation.top
+  palette:
     - scheme: default
-      primary: indigo 
+      primary: indigo
       accent: indigo
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
     - scheme: slate
       primary: indigo
       accent: indigo
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
 
+plugins:
+  - search
+
+# 关闭自定义占位符被当作坏链接的噪音
 validation:
   links:
     unrecognized_links: ignore
-
-# 开启 PWA 支持（手机上像 App 一样）
-extra:
-  manifest: manifest.webmanifest
-
-# 插件配置
-plugins:
-  - search # 开启搜索
-  - offline # 开启离线访问能力
-
