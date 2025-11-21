@@ -26,6 +26,9 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 
+validation:
+  links:
+    unrecognized_links: ignore
 
 # 开启 PWA 支持（手机上像 App 一样）
 extra:
