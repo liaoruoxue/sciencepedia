@@ -3,8 +3,6 @@ site_url: https://liaoruoxue.github.io/sciencepedia/
 repo_url: https://github.com/liaoruoxue/sciencepedia
 repo_name: SciencePedia
 
-docs_dir: .
-
 theme:
   name: material
   language: zh
@@ -37,13 +35,4 @@ extra:
 plugins:
   - search # 开启搜索
   - offline # 开启离线访问能力
-
-# 排除不需要显示在电子书里的系统文件
-exclude_docs: |
-  .github/
-  .gitignore
-  mkdocs.yml
-  requirements.txt
-  LICENSE
-  *.pdf
 
