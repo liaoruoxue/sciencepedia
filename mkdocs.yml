@@ -1,0 +1,29 @@
+site_name: SciencePediaBooks
+site_url: https://liaoruoxue.github.io/sciencepedia/
+
+theme:
+  name: material
+  language: zh # 中文支持
+  features:
+    - navigation.instant # 页面切换无刷新，像原生App一样快
+    - navigation.tracking # URL跟随滚动更新
+    - navigation.top # 返回顶部按钮
+    - search.suggest # 搜索建议
+    - search.highlight # 搜索高亮
+  palette: 
+    - scheme: default # 亮色模式
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate # 暗色模式（夜间模式）
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+# 开启 PWA 支持（手机上像 App 一样）
+extra:
+  manifest: manifest.webmanifest
+
+plugins:
+  - search # 开启搜索
+  - offline # 开启离线访问能力
