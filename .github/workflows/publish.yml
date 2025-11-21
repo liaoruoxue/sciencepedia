@@ -27,11 +27,12 @@ jobs:
           # 移动 pdf
           mv *.pdf docs/ || true
           # 移动所有带 @@ 的资料文件夹
-          mv *@@* docs/
+          # mv *@@* docs/
           # 移动 Concepts 文件夹
-          mv Concepts_* docs/
+          # mv Concepts_* docs/
+          mv 数学@@872779 docs/
           
           # 打印一下看看移动后的结构（调试用）
-          ls -R docs/
+          # ls -R docs/
 
       - run: mkdocs gh-deploy --force
