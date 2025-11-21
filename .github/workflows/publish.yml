@@ -162,11 +162,7 @@ jobs:
       - name: Ensure docs/index.md exists
         run: |
           if [ ! -f docs/index.md ]; then
-            printf '%s\n' \
-'# SciencePedia' \
-'' \
-'- [目录检索（仅目录名）](dir-search.html)' \
-> docs/index.md
+            printf '# SciencePedia\n\n - [目录检索（仅目录名）](dir-search.html)' > docs/index.md
           fi
 
       # 只在索引或检索页有变化时提交一次（避免循环）
