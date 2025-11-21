@@ -8,8 +8,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
+          
       - run: pip install mkdocs-material
+
+      # 核心步骤：整理文件结构
+      # 把除了 .github 和 配置文件 之外的所有东西，都扔进 docs 文件夹
+      - name: Move files to docs folder
+        run: |
+          mkdir docs
+          # 移动所有 md 文件
+          mv *.md docs/
+          # 移动 manifest
+          mv manifest.webmanifest docs/ || true
+          # 移动 pdf
+          mv *.pdf docs/ || true
+          # 移动所有带 @@ 的资料文件夹
+          mv *@@* docs/
+          # 移动 Concepts 文件夹
+          mv Concepts_* docs/
+          
+          # 打印一下看看移动后的结构（调试用）
+          ls -R docs/
+
       - run: mkdocs gh-deploy --force
