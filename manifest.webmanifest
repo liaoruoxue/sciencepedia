@@ -1,0 +1,16 @@
+{
+    "name": "SciencePedia",
+    "short_name": "Science",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#4051b5",
+    "description": "Open Scientific Knowledge Base",
+    "icons": [
+        {
+            "src": "https://cdn1.deepmd.net/bohrium/images/sciencepedia/sciencepedia.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}
