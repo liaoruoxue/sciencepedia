@@ -3,14 +3,14 @@ name: Generate directory index
 on:
   push:
     branches:
-      - main        # 只在 main 分支更新时生成
-  workflow_dispatch: # 允许手动触发（可选）
+      - main
+  workflow_dispatch:
 
 jobs:
   build-index:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # 允许工作流往仓库里提交文件
+      contents: write
 
     steps:
       - name: Checkout
@@ -20,7 +20,6 @@ jobs:
 
       - name: Generate directory index
         run: |
-          # 生成目录列表（只要目录，不要文件），并做一些过滤
           find . -type d \
             -not -path './.git*' \
             -not -path './.github*' \
@@ -31,15 +30,15 @@ jobs:
 
       - name: Commit and push if changed
         run: |
-          # 如果文件没有变化，就不提交
-          if git diff --quiet directory_index.txt; then
+          if git status --porcelain directory_index.txt | grep .; then
+            echo "directory_index.txt changed, committing..."
+
+            git config user.name  "riso"
+            git config user.email "ruoxue@gmail.com"
+
+            git add directory_index.txt
+            git commit -m "chore: update directory index [skip ci]"
+            git push
+          else
             echo "No changes in directory_index.txt"
-            exit 0
           fi
-
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add directory_index.txt
-          git commit -m "chore: update directory index [skip ci]"
-          git push
