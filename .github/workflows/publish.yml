@@ -178,8 +178,8 @@ jobs:
       - name: Commit and push index/search if changed
         run: |
           if git status --porcelain docs/directory_index.txt docs/directory_index.txt.gz docs/directory_meta.json docs/dir-search.html docs/index.md | grep .; then
-            git config user.name  "riso"
-            git config user.email "ruoxue@gmail.com"
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add docs/directory_index.txt docs/directory_index.txt.gz docs/directory_meta.json docs/dir-search.html docs/index.md
             git commit -m "chore: update dir index & search page [skip ci]"
             git push
