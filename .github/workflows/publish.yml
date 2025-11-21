@@ -1,38 +1,45 @@
-name: ci 
+name: Generate directory index
+
 on:
   push:
     branches:
-      - main
+      - main        # 只在 main 分支更新时生成
+  workflow_dispatch: # 允许手动触发（可选）
+
 jobs:
-  deploy:
+  build-index:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # 允许工作流往仓库里提交文件
+
     steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          python-version: 3.x
-          
-      - run: pip install mkdocs-material
+          fetch-depth: 0
 
-      # 核心步骤：整理文件结构
-      # 把除了 .github 和 配置文件 之外的所有东西，都扔进 docs 文件夹
-      - name: Move files to docs folder
+      - name: Generate directory index
         run: |
-          mkdir docs
-          # 移动所有 md 文件
-          mv *.md docs/
-          # 移动 manifest
-          mv manifest.webmanifest docs/ || true
-          # 移动 pdf
-          mv *.pdf docs/ || true
-          # 移动所有带 @@ 的资料文件夹
-          # mv *@@* docs/
-          # 移动 Concepts 文件夹
-          # mv Concepts_* docs/
-          mv 数学@@872779 docs/
-          
-          # 打印一下看看移动后的结构（调试用）
-          # ls -R docs/
+          # 生成目录列表（只要目录，不要文件），并做一些过滤
+          find . -type d \
+            -not -path './.git*' \
+            -not -path './.github*' \
+            -not -path './site*' \
+            -not -path './docs/site*' \
+          | sed 's|^\./||' \
+          | sort > directory_index.txt
 
-      - run: mkdocs gh-deploy --force
+      - name: Commit and push if changed
+        run: |
+          # 如果文件没有变化，就不提交
+          if git diff --quiet directory_index.txt; then
+            echo "No changes in directory_index.txt"
+            exit 0
+          fi
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add directory_index.txt
+          git commit -m "chore: update directory index [skip ci]"
+          git push
