@@ -162,16 +162,11 @@ jobs:
       - name: Ensure docs/index.md exists
         run: |
           if [ ! -f docs/index.md ]; then
-            cat > docs/index.md << 'MD'
-            # SciencePedia
-
-            欢迎！这是站点首页。  
-            你可以使用下面的“目录检索（仅目录名）”快速定位你要找的路径：
-
-            - [目录检索（仅目录名）](dir-search.html)
-
-            > 提示：检索页只提供目录名的部分匹配，点击会跳转到 GitHub 对应目录查看内容。
-            MD
+            printf '%s\n' \
+'# SciencePedia' \
+'' \
+'- [目录检索（仅目录名）](dir-search.html)' \
+> docs/index.md
           fi
 
       # 只在索引或检索页有变化时提交一次（避免循环）
