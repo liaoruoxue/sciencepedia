@@ -1,4 +1,4 @@
-name: Generate directory index
+name: Generate directory index (txt + html)
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
   build-index:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write   # 允许提交回仓库
 
     steps:
       - name: Checkout
@@ -18,7 +18,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Generate directory index
+      # 1. 生成目录列表 TXT
+      - name: Generate directory_index.txt
         run: |
           find . -type d \
             -not -path './.git*' \
@@ -28,17 +29,83 @@ jobs:
           | sed 's|^\./||' \
           | sort > directory_index.txt
 
+      # 2. 用目录列表生成可搜索 + 可点击的 HTML，放到 docs 里
+      - name: Generate clickable HTML (docs/dir-index.html)
+        run: |
+          mkdir -p docs
+
+          cat > docs/dir-index.html << 'EOF'
+          <!doctype html>
+          <html lang="zh-CN">
+          <head>
+            <meta charset="utf-8">
+            <title>SciencePedia 目录索引</title>
+            <style>
+              body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 1rem 2rem; }
+              #search { width: 100%; padding: 8px; font-size: 14px; box-sizing: border-box; margin-bottom: 1rem; }
+              #count { margin-bottom: 0.5rem; color: #666; font-size: 12px; }
+              ul { list-style: none; padding-left: 0; max-height: 80vh; overflow-y: auto; border: 1px solid #ddd; }
+              li { padding: 2px 6px; }
+              li:nth-child(odd) { background: #fafafa; }
+              a { text-decoration: none; color: #0366d6; font-size: 13px; }
+              a:hover { text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <h1>SciencePedia 目录索引</h1>
+            <p>本页仅用于快速搜索目录路径，点击链接会跳到 GitHub 对应目录。</p>
+            <input id="search" type="text" placeholder="输入关键字过滤，例如： 数学@@872779 或 Borsuk-Ulam" />
+            <div id="count"></div>
+            <ul id="list">
+          EOF
+
+          while IFS= read -r p; do
+            [ -z "$p" ] && continue
+            echo "  <li><a href=\"https://github.com/liaoruoxue/sciencepedia/tree/main/$p\" target=\"_blank\" rel=\"noopener noreferrer\">$p</a></li>" >> docs/dir-index.html
+          done < directory_index.txt
+
+          cat >> docs/dir-index.html << 'EOF'
+            </ul>
+            <script>
+              const input = document.getElementById('search');
+              const list = document.getElementById('list');
+              const count = document.getElementById('count');
+
+              function updateCount() {
+                const items = list.querySelectorAll('li');
+                let visible = 0;
+                items.forEach(li => { if (li.style.display !== 'none') visible++; });
+                count.textContent = `当前显示 ${visible} 条目录`;
+              }
+
+              input.addEventListener('input', function () {
+                const q = this.value.toLowerCase();
+                const items = list.querySelectorAll('li');
+                items.forEach(li => {
+                  const text = li.textContent.toLowerCase();
+                  li.style.display = text.includes(q) ? '' : 'none';
+                });
+                updateCount();
+              });
+
+              updateCount();
+            </script>
+          </body>
+          </html>
+          EOF
+
+      # 3. 两个文件有变化才提交（防止无限循环）
       - name: Commit and push if changed
         run: |
-          if git status --porcelain directory_index.txt | grep .; then
-            echo "directory_index.txt changed, committing..."
+          if git status --porcelain directory_index.txt docs/dir-index.html | grep .; then
+            echo "Index files changed, committing..."
 
             git config user.name  "riso"
             git config user.email "ruoxue@gmail.com"
 
-            git add directory_index.txt
+            git add directory_index.txt docs/dir-index.html
             git commit -m "chore: update directory index [skip ci]"
             git push
           else
-            echo "No changes in directory_index.txt"
+            echo "No changes in index files"
           fi
